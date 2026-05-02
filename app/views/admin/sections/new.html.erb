@@ -1,0 +1,8 @@
+<div style="margin-bottom:16px;">
+  <%= link_to '← 목록으로', admin_sections_path, style: 'color:#666; text-decoration:none; font-size:14px;' %>
+</div>
+
+<div style="background:white; border-radius:8px; padding:28px; box-shadow:0 1px 3px rgba(0,0,0,.06); max-width:560px;">
+  <h1 style="font-size:20px; font-weight:700; margin-bottom:24px;">새 섹션 만들기</h1>
+  <%= render 'form', section: @section %>
+</div>

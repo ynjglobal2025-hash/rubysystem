@@ -1,0 +1,40 @@
+<%= form_with model: [:admin, section], style: 'display:grid; gap:16px;' do |f| %>
+  <% if section.errors.any? %>
+    <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:6px; font-size:14px;">
+      <% section.errors.full_messages.each do |msg| %>
+        <div><%= msg %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :title, '섹션 제목', style: 'display:block; font-weight:600; font-size:14px; margin-bottom:6px;' %>
+    <%= f.text_field :title, placeholder: '섹션 제목을 입력하세요',
+        style: 'width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px;' %>
+  </div>
+
+  <div>
+    <%= f.label :description, '설명 (선택)', style: 'display:block; font-weight:600; font-size:14px; margin-bottom:6px;' %>
+    <%= f.text_area :description, rows: 3, placeholder: '섹션 설명을 입력하세요',
+        style: 'width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; resize:vertical;' %>
+  </div>
+
+  <div>
+    <%= f.label :status, '상태', style: 'display:block; font-weight:600; font-size:14px; margin-bottom:6px;' %>
+    <%= f.select :status, [['대기 중', 'pending'], ['진행 중', 'in_progress'], ['완료', 'completed']],
+        {}, style: 'width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px;' %>
+  </div>
+
+  <div>
+    <%= f.label :progress, '진행률 (%)', style: 'display:block; font-weight:600; font-size:14px; margin-bottom:6px;' %>
+    <%= f.number_field :progress, min: 0, max: 100, placeholder: '0',
+        style: 'width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px;' %>
+  </div>
+
+  <div style="display:flex; gap:8px; margin-top:8px;">
+    <%= f.submit section.new_record? ? '섹션 생성' : '변경사항 저장',
+        style: 'background:#1a1a2e; color:white; padding:10px 20px; border-radius:6px; border:none; cursor:pointer; font-size:14px; font-weight:600;' %>
+    <%= link_to '취소', section.new_record? ? admin_sections_path : admin_section_path(section),
+        style: 'padding:10px 20px; border-radius:6px; border:1px solid #ddd; font-size:14px; text-decoration:none; color:#333; text-align:center;' %>
+  </div>
+<% end %>

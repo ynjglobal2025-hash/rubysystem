@@ -1,38 +1,19 @@
-# Ruby Admin — 모바일 동기화 사용 가이드
+# Ruby Admin — 사용 가이드
 
 ## 시작하기
 
 ### 1단계 — 서버 실행 (PC에서 1회만)
 
 ```bash
-# 패키지 설치
 bundle install
-
-# 데이터베이스 생성
 rails db:migrate
-
-# 예제 데이터 입력 (선택)
-rails db:seed
-
-# 서버 시작
+rails db:seed   # 예제 데이터 (선택)
 rails server
-```
-
-서버가 시작되면 터미널에 아래 메시지가 표시됩니다:
-```
-Listening on http://127.0.0.1:3000
 ```
 
 ---
 
 ## PC에서 사용하기
-
-### 2단계 — PC 브라우저 접속
-
-브라우저 주소창에 입력:
-```
-http://localhost:3000
-```
 
 | 화면 | 주소 |
 |------|------|
@@ -42,96 +23,149 @@ http://localhost:3000
 
 ---
 
-## 모바일에서 사용하기 (단계별)
+## 모바일 브라우저에서 사용하기
 
-### 3단계 — PC의 IP 주소 확인
+### 2단계 — PC IP 주소 확인
 
-**Windows:**
-```
-윈도우 키 + R → cmd 입력 → ipconfig 실행
-→ IPv4 주소 확인 (예: 192.168.0.10)
-```
-
-**Mac:**
-```
-시스템 설정 → Wi-Fi → 세부정보
-→ IP 주소 확인 (예: 192.168.0.10)
-```
+**Windows:** `시작 → cmd → ipconfig` → IPv4 주소
+**Mac:** `시스템 설정 → Wi-Fi → 세부정보` → IP 주소
 
 > 모바일과 PC가 **같은 Wi-Fi**에 연결되어 있어야 합니다.
 
----
-
-### 4단계 — 모바일 브라우저에서 접속
-
-모바일 브라우저 주소창에 PC IP 주소를 입력합니다:
+### 3단계 — 모바일 브라우저 접속
 
 ```
-http://192.168.0.10:3000/mobile
-```
-
-> `192.168.0.10` 부분을 3단계에서 확인한 IP 주소로 바꾸세요.
-
----
-
-### 5단계 — 모바일 화면 구성
-
-```
-┌──────────────────────────────┐
-│  Ruby Admin  모바일 동기화 뷰  │  ← 헤더
-├──────────────────────────────┤
-│  3 진행중 │ 2 완료 │ 1 대기  │  ← 요약 현황
-├──────────────────────────────┤
-│  🔄 진행 중                   │
-│  ┌────────────────────────┐  │
-│  │ 65% 백엔드 API 개발  › │  │  ← 탭하면 상세 보기
-│  └────────────────────────┘  │
-│  ┌────────────────────────┐  │
-│  │ 40% 프론트엔드 개발  › │  │
-│  └────────────────────────┘  │
-├──────────────────────────────┤
-│  ✅ 완료                      │
-│  ...                         │
-├──────────────────────────────┤
-│  📋 목록  │  ⚙️ 관리자         │  ← 하단 탭
-└──────────────────────────────┘
+http://[PC-IP]:3000/mobile
 ```
 
 ---
 
-### 6단계 — 섹션 상세 보기
+## 모바일 앱 연동하기 (React Native / Flutter)
 
-목록에서 섹션을 **탭**하면 상세 화면으로 이동합니다:
+### API 기본 정보
 
+| 항목 | 값 |
+|------|----|
+| Base URL | `http://[PC-IP]:3000/api/v1` |
+| 인증 방식 | 요청 헤더에 `X-API-Token` 포함 |
+| 기본 토큰 | `ruby-admin-secret-token-2026` |
+| 응답 형식 | JSON |
+
+> 운영 환경에서는 `API_SECRET_TOKEN` 환경변수로 토큰을 교체하세요.
+
+---
+
+### API 엔드포인트
+
+#### 전체 섹션 목록
 ```
-┌──────────────────────────────┐
-│ ‹ 목록        섹션 상세        │
-├──────────────────────────────┤
-│  [진행 중]                    │
-│  백엔드 API 개발               │  ← 제목
-├──────────────────────────────┤
-│  진행률                       │
-│  65%  ████████░░░░           │  ← 진행률 바
-├──────────────────────────────┤
-│  설명                        │
-│  REST API 개발 진행 중        │
-├──────────────────────────────┤
-│  타임스탬프                   │
-│  생성일    2026.05.01 09:00  │
-│  최종 수정  2026.05.02 14:30 │
-└──────────────────────────────┘
+GET /api/v1/sections
+```
+
+#### 섹션 상세
+```
+GET /api/v1/sections/:id
+```
+
+#### 모바일 동기화 (진행중 + 완료 섹션만)
+```
+GET /api/v1/sections/sync
+GET /api/v1/sections/sync?since=2026-05-01T00:00:00Z   # 특정 시간 이후 변경분
 ```
 
 ---
 
-### 7단계 — 동기화 확인
+### React Native 연동 예시
 
-PC에서 섹션을 수정하면, 모바일에서 **페이지 새로고침**만 하면 바로 반영됩니다.
+```javascript
+const BASE_URL = 'http://192.168.0.10:3000/api/v1';
+const API_TOKEN = 'ruby-admin-secret-token-2026';
 
-| 동작 | 설명 |
-|------|------|
-| 모바일 새로고침 | 최신 데이터 동기화 |
-| PC에서 편집 후 저장 | 모바일 새로고침 시 즉시 반영 |
+const headers = {
+  'X-API-Token': API_TOKEN,
+  'Content-Type': 'application/json',
+};
+
+// 동기화 (진행 중 섹션 포함)
+export async function syncSections(since = null) {
+  const url = since
+    ? `${BASE_URL}/sections/sync?since=${since}`
+    : `${BASE_URL}/sections/sync`;
+
+  const res = await fetch(url, { headers });
+  return res.json(); // { sections: [...], synced_at: '...', total: N }
+}
+
+// 전체 목록
+export async function fetchSections() {
+  const res = await fetch(`${BASE_URL}/sections`, { headers });
+  return res.json();
+}
+
+// 섹션 상세
+export async function fetchSection(id) {
+  const res = await fetch(`${BASE_URL}/sections/${id}`, { headers });
+  return res.json();
+}
+```
+
+---
+
+### Flutter 연동 예시
+
+```dart
+const baseUrl = 'http://192.168.0.10:3000/api/v1';
+const apiToken = 'ruby-admin-secret-token-2026';
+
+final headers = {
+  'X-API-Token': apiToken,
+  'Content-Type': 'application/json',
+};
+
+// 동기화
+Future<Map<String, dynamic>> syncSections({String? since}) async {
+  final uri = since != null
+      ? Uri.parse('$baseUrl/sections/sync?since=$since')
+      : Uri.parse('$baseUrl/sections/sync');
+
+  final response = await http.get(uri, headers: headers);
+  return jsonDecode(response.body);
+}
+```
+
+---
+
+### API 응답 예시
+
+```json
+{
+  "sections": [
+    {
+      "id": 3,
+      "title": "백엔드 API 개발",
+      "description": "REST API 개발 진행 중",
+      "status": "in_progress",
+      "progress": 65,
+      "started_at": null,
+      "completed_at": null,
+      "updated_at": "2026-05-02T10:30:00+09:00",
+      "created_at": "2026-05-01T09:00:00+09:00"
+    }
+  ],
+  "synced_at": "2026-05-02T14:00:00+09:00",
+  "total": 1
+}
+```
+
+---
+
+### 에러 응답
+
+| 상황 | HTTP 코드 | 메시지 |
+|------|-----------|--------|
+| 토큰 없음/잘못됨 | `401` | 인증이 필요합니다 |
+| 섹션 없음 | `404` | 섹션을 찾을 수 없습니다 |
+| 파라미터 오류 | `400` | 필수 파라미터가 누락되었습니다 |
 
 ---
 
@@ -140,6 +174,5 @@ PC에서 섹션을 수정하면, 모바일에서 **페이지 새로고침**만 �
 | 용도 | 주소 |
 |------|------|
 | PC 관리자 화면 | `http://localhost:3000` |
-| 모바일 뷰 | `http://[PC-IP]:3000/mobile` |
-| 모바일 섹션 상세 | `http://[PC-IP]:3000/mobile/sections/1` |
-| 동기화 API (앱 개발용) | `http://[PC-IP]:3000/api/v1/sections/sync` |
+| 모바일 브라우저 뷰 | `http://[PC-IP]:3000/mobile` |
+| 모바일 앱 API | `http://[PC-IP]:3000/api/v1/sections/sync` |

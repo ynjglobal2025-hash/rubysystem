@@ -1,20 +1,23 @@
 module Api
   module V1
-    class SectionsController < ApplicationController
-      # 모바일에서 호출하는 전체 목록 (모든 상태 포함)
+    class SectionsController < BaseController
+
+      # GET /api/v1/sections
       def index
         @sections = Section.all.order(updated_at: :desc)
-        render json: sections_json(@sections)
+        response.set_header('X-Total-Count', @sections.count.to_s)
+        render json: { sections: sections_json(@sections) }
       end
 
+      # GET /api/v1/sections/:id
       def show
         @section = Section.find(params[:id])
-        render json: section_json(@section)
+        render json: { section: section_json(@section) }
       end
 
-      # 모바일 동기화 전용 엔드포인트
-      # BUG FIX: 이전에는 completed 상태만 반환하여 in_progress 섹션이 모바일에 표시되지 않았음
-      # 수정: in_progress + completed 상태를 모두 포함하여 반환
+      # GET /api/v1/sections/sync
+      # 모바일 앱에서 주기적으로 호출하는 동기화 엔드포인트
+      # BUG FIX: in_progress 섹션이 누락되던 문제 수정 (in_progress + completed 모두 반환)
       def sync
         since = params[:since].present? ? Time.parse(params[:since]) : nil
 
@@ -25,9 +28,9 @@ module Api
         end
 
         render json: {
-          sections:   sections_json(@sections),
-          synced_at:  Time.current.iso8601,
-          total:      @sections.count
+          sections:  sections_json(@sections),
+          synced_at: Time.current.iso8601,
+          total:     @sections.count
         }
       end
 

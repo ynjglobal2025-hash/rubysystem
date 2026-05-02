@@ -9,6 +9,7 @@ gem 'importmap-rails'
 gem 'turbo-rails'
 gem 'stimulus-rails'
 gem 'jbuilder'
+gem 'rack-cors'
 gem 'tzinfo-data', platforms: %i[ windows jruby ]
 gem 'bootsnap', require: false
 

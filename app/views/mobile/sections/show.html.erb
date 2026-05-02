@@ -1,0 +1,91 @@
+<%
+  status_color = {
+    'in_progress' => { bg: '#fff3cd', text: '#856404', bar: '#ffc107' },
+    'completed'   => { bg: '#d1e7dd', text: '#0f5132', bar: '#28a745' },
+    'pending'     => { bg: '#e9ecef', text: '#495057', bar: '#6c757d' }
+  }[@section.status] || { bg: '#e9ecef', text: '#495057', bar: '#6c757d' }
+
+  status_label = {
+    'in_progress' => '진행 중',
+    'completed'   => '완료',
+    'pending'     => '대기 중'
+  }[@section.status] || @section.status
+%>
+
+<div class="header">
+  <%= link_to mobile_sections_path, class: 'header-back' do %>
+    ‹ 목록
+  <% end %>
+  <h1 style="font-size:16px;">섹션 상세</h1>
+</div>
+
+<div class="content">
+
+  <div class="detail-card">
+
+    <!-- 제목 / 상태 -->
+    <div class="detail-header">
+      <span class="detail-status-badge" style="background:<%= status_color[:bg] %>; color:<%= status_color[:text] %>;">
+        <%= status_label %>
+      </span>
+      <div class="detail-title"><%= @section.title %></div>
+    </div>
+
+    <!-- 진행률 -->
+    <div class="detail-section">
+      <div class="detail-label">진행률</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="detail-value" style="font-size:28px; font-weight:700; color:<%= status_color[:bar] %>;">
+          <%= @section.progress %>%
+        </span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill"
+             style="width:<%= @section.progress %>%; background:<%= status_color[:bar] %>;"></div>
+      </div>
+    </div>
+
+    <!-- 설명 -->
+    <% if @section.description.present? %>
+      <div class="detail-section">
+        <div class="detail-label">설명</div>
+        <div class="detail-value" style="line-height:1.6;"><%= @section.description %></div>
+      </div>
+    <% end %>
+
+    <!-- 타임스탬프 -->
+    <div class="detail-section">
+      <div class="detail-label">타임스탬프</div>
+      <div class="meta-row">
+        <span>생성일</span>
+        <span><%= @section.created_at.strftime('%Y.%m.%d %H:%M') %></span>
+      </div>
+      <div class="meta-row">
+        <span>최종 수정</span>
+        <span><%= @section.updated_at.strftime('%Y.%m.%d %H:%M') %></span>
+      </div>
+      <% if @section.started_at.present? %>
+        <div class="meta-row">
+          <span>시작일</span>
+          <span><%= @section.started_at.strftime('%Y.%m.%d %H:%M') %></span>
+        </div>
+      <% end %>
+      <% if @section.completed_at.present? %>
+        <div class="meta-row">
+          <span>완료일</span>
+          <span><%= @section.completed_at.strftime('%Y.%m.%d %H:%M') %></span>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <!-- PC 관리자 링크 -->
+  <div style="text-align:center; margin-top:8px;">
+    <%= link_to admin_section_path(@section),
+        style: 'font-size:13px; color:#1a1a2e; text-decoration:underline;' do %>
+      PC 관리자 화면에서 편집하기 →
+    <% end %>
+  </div>
+
+</div>

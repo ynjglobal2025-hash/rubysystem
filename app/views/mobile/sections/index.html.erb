@@ -1,0 +1,117 @@
+<%
+  STATUS_COLOR = {
+    'in_progress' => { bg: '#fff3cd', text: '#856404', border: '#ffc107' },
+    'completed'   => { bg: '#d1e7dd', text: '#0f5132', border: '#28a745' },
+    'pending'     => { bg: '#e9ecef', text: '#495057', border: '#6c757d' }
+  }.freeze
+
+  STATUS_LABEL = {
+    'in_progress' => '진행 중',
+    'completed'   => '완료',
+    'pending'     => '대기 중'
+  }.freeze
+%>
+
+<div class="header">
+  <div style="flex:1;">
+    <h1>Ruby Admin</h1>
+    <div class="header-subtitle">모바일 동기화 뷰</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="sync-info">
+    최종 동기화: <%= Time.current.strftime('%Y.%m.%d %H:%M') %>
+  </div>
+
+  <!-- 요약 -->
+  <div class="summary-bar">
+    <div class="summary-card">
+      <div class="num" style="color:#ffc107;"><%= @in_progress.count %></div>
+      <div class="label">진행 중</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color:#28a745;"><%= @completed.count %></div>
+      <div class="label">완료</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color:#6c757d;"><%= @pending.count %></div>
+      <div class="label">대기</div>
+    </div>
+  </div>
+
+  <!-- 진행 중 섹션 -->
+  <% if @in_progress.any? %>
+    <div class="section-group">
+      <div class="group-title">🔄 진행 중</div>
+      <% @in_progress.each do |section| %>
+        <%= link_to mobile_section_path(section), class: 'section-card' do %>
+          <div class="progress-ring" style="color:#ffc107; border-color:#ffc107;">
+            <%= section.progress %>%
+          </div>
+          <div class="section-info">
+            <div class="section-title"><%= section.title %></div>
+            <% if section.description.present? %>
+              <div class="section-desc"><%= section.description %></div>
+            <% end %>
+            <span class="section-status" style="background:#fff3cd; color:#856404;">진행 중</span>
+          </div>
+          <span class="chevron">›</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- 완료 섹션 -->
+  <% if @completed.any? %>
+    <div class="section-group">
+      <div class="group-title">✅ 완료</div>
+      <% @completed.each do |section| %>
+        <%= link_to mobile_section_path(section), class: 'section-card' do %>
+          <div class="progress-ring" style="color:#28a745; border-color:#28a745;">
+            <%= section.progress %>%
+          </div>
+          <div class="section-info">
+            <div class="section-title"><%= section.title %></div>
+            <% if section.description.present? %>
+              <div class="section-desc"><%= section.description %></div>
+            <% end %>
+            <span class="section-status" style="background:#d1e7dd; color:#0f5132;">완료</span>
+          </div>
+          <span class="chevron">›</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- 대기 중 섹션 -->
+  <% if @pending.any? %>
+    <div class="section-group">
+      <div class="group-title">⏳ 대기 중</div>
+      <% @pending.each do |section| %>
+        <%= link_to mobile_section_path(section), class: 'section-card' do %>
+          <div class="progress-ring" style="color:#6c757d; border-color:#6c757d;">
+            <%= section.progress %>%
+          </div>
+          <div class="section-info">
+            <div class="section-title"><%= section.title %></div>
+            <% if section.description.present? %>
+              <div class="section-desc"><%= section.description %></div>
+            <% end %>
+            <span class="section-status" style="background:#e9ecef; color:#495057;">대기 중</span>
+          </div>
+          <span class="chevron">›</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @sections.empty? %>
+    <div style="text-align:center; padding:60px 20px; color:#aaa;">
+      <div style="font-size:48px; margin-bottom:16px;">📭</div>
+      <p>등록된 섹션이 없습니다.</p>
+    </div>
+  <% end %>
+
+</div>

@@ -5,6 +5,12 @@ Rails.application.routes.draw do
     resources :sections
   end
 
+  # 모바일 전용 뷰 (브라우저로 바로 접속)
+  namespace :mobile do
+    root 'sections#index'
+    resources :sections, only: [:index, :show]
+  end
+
   namespace :api do
     namespace :v1 do
       resources :sections, only: [:index, :show] do
